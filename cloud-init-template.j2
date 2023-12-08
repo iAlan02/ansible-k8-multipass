@@ -1,0 +1,7 @@
+users:
+    - default
+    - name: vadmin
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      ssh-authorized-keys:
+        - {{ public_key }}
+     
