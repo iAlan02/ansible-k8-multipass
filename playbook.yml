@@ -1,8 +1,13 @@
 ---
 - name: Deploy a web application
   hosts: multipassvm1, multipassvm2
-  become: true 
+  become: true
   tasks:
+    - name: Clone git repository
+      git:
+        repo: https://github.com/iAlan02/api-xample.git
+        dest: /home/vadmin/api-xample
+        force: true
     - name: Update package repositories and install Node.js and npm
       apt:
         update_cache: true
@@ -10,17 +15,38 @@
         - nodejs
         - npm
         state: present
-    - name: Clone git repository
-      git:
-        repo: https://github.com/iAlan02/api-xample.git
-        dest: /home/vadmin/api-xample
-        force: true
-    - name: Install microk8s
-      shell: snap install microk8s --classic
-    - name: Enable microk8s addons
-      shell: microk8s enable dns dashboard
-    - name: Run application manifest
-      shell: microk8s kubectl apply -f /home/vadmin/api-xample/manifest.yml
+    - name: Install Docker
+      shell: snap install docker  
+    - name: Install Minikube
+      shell: curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-arm64 && sudo install minikube-linux-arm64 /usr/local/bin/minikube
+    - name: Start Minikube
+      shell: sudo sysctl fs.protected_regular=0 && minikube start --force
+    - name: Install Helm
+      shell: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
+    - name: Install Kubernetes CLI (kubectl)
+      shell: snap install kubectl --classic
+    - name: Add Helm repo
+      shell: helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
+    - name: Create values.yml file
+      copy:
+        dest: /home/vadmin/api-xample/values.yml
+        content: |
+          image:
+            repository: ruca93/api-xample
+            tag: c6aaf1d
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+          service:
+            type: ClusterIP
+            internalPort: 3000
+    - name: Install banzaicloud-stable/nodejs
+      shell: helm install my-release -f /home/vadmin/api-xample/values.yml banzaicloud-stable/nodejs
     # - name: Install dependencies
     #   npm:
     #     path: api-xample
