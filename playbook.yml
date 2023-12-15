@@ -1,4 +1,12 @@
 ---
+# This playbook deploys a web application on multiple nodes using Ansible.
+# It performs the following tasks:
+# 1. Clones a git repository to the destination directory.
+# 2. Updates package repositories and installs Node.js and npm.
+# 3. Installs Docker using snap.
+# 4. Builds a container image using Docker.
+# 5. Runs the container on port 3000.
+
 - name: Deploy a web application
   hosts: node01, node02
   become: true
@@ -8,13 +16,6 @@
         repo: https://github.com/iAlan02/api-xample.git
         dest: /home/vadmin/api-xample
         force: true
-    - name: Update package repositories and install Node.js and npm
-      apt:
-        update_cache: true
-        name:
-        - nodejs
-        - npm
-        state: present
     - name: Install Docker
       shell: snap install docker  
     - name: Build container image

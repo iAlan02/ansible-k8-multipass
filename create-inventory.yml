@@ -1,7 +1,7 @@
 ---
 - name: List IP addresses of created VMs
   shell: multipass info {{ item.key }} | grep IPv4 | awk '{print $2}'
-  loop: "{{ k3snodes | dict2items }}"
+  loop: "{{ nodes | dict2items }}"
   register: vm_ips
   changed_when: false
   check_mode: no

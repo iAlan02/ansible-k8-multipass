@@ -2,13 +2,13 @@ all:
   hosts:
     node01:
       ansible_connection: ssh
-      ansible_host: "192.168.64.43"
+      ansible_host: "192.168.64.47"
       ansible_user: vadmin
       ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o ControlMaster=no -o ControlPath=none"
       ansible_ssh_private_key_file: ./keys/user_key
     node02:
       ansible_connection: ssh
-      ansible_host: "192.168.64.44"
+      ansible_host: "192.168.64.48"
       ansible_user: vadmin
       ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o ControlMaster=no -o ControlPath=none"
       ansible_ssh_private_key_file: ./keys/user_key
