@@ -15,9 +15,5 @@
       vmname: "{{ item.key }}"
       vmcreationparams: "{{ item.value }}"
     loop: "{{ k3snodes | dict2items }}"
-  - name: Update IP addresses in inventory.yml
-    lineinfile:
-      path: ./inventory.yml
-      regexp: '^ansible_host='
-      line: 'ansible_host={{ ansible_default_ipv4.address }}'
-    loop: "{{ k3snodes | dict2items }}"
+  - name: Create inventory file
+    include_tasks: create-inventory.yml

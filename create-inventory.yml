@@ -1,0 +1,25 @@
+---
+- name: List IP addresses of created VMs
+  shell: multipass info {{ item.key }} | grep IPv4 | awk '{print $2}'
+  loop: "{{ k3snodes | dict2items }}"
+  register: vm_ips
+  changed_when: false
+  check_mode: no
+  run_once: true
+  delegate_to: localhost
+  ignore_errors: true
+- name: Display VM IP addresses
+  debug:
+    var: vm_ips.results | map(attribute='stdout_lines') | list
+- name: List ip addresses of created VMs
+  debug:
+    msg: "IP address: {{ item.stdout }}"
+  loop: "{{ vm_ips.results }}"
+  delegate_to: localhost
+- name: Generate inventory.yml from template
+  template:
+    src: inventory-template.j2
+    dest: inventory.yml
+  vars:
+    vm_ips: "{{ vm_ips.results }}"
+  delegate_to: localhost

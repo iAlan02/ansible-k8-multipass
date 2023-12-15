@@ -1,8 +1,13 @@
 ---
 - name: Deploy a web application
-  hosts: multipassvm1, multipassvm2
-  become: true 
+  hosts: node01, node02
+  become: true
   tasks:
+    - name: Clone git repository
+      git:
+        repo: https://github.com/iAlan02/api-xample.git
+        dest: /home/vadmin/api-xample
+        force: true
     - name: Update package repositories and install Node.js and npm
       apt:
         update_cache: true
@@ -10,36 +15,11 @@
         - nodejs
         - npm
         state: present
-    - name: Clone git repository
-      git:
-        repo: https://github.com/iAlan02/api-xample.git
-        dest: /home/vadmin/api-xample
-        force: true
-    - name: Install microk8s
-      shell: snap install microk8s --classic
-    - name: Enable microk8s addons
-      shell: microk8s enable dns dashboard
-    - name: Run application manifest
-      shell: microk8s kubectl apply -f /home/vadmin/api-xample/manifest.yml
-    # - name: Install dependencies
-    #   npm:
-    #     path: api-xample
-    # - name: Create environment variables file
-    #   copy:
-    #     dest: /home/vadmin/api-xample/.env
-    #     content: |
-    #       PORT=3000
-    #       API_KEY=apiKey9000
-    # - name: Stop all node processes
-    #   shell: killall node
-    #   ignore_errors: true
-    # - name: Start the application
-    #   command:
-    #     chdir: /home/vadmin/api-xample
-    #     cmd: npm start
-    #   async: 1000
-    #   poll: 0
-    # - name: Ensure app is running
-    #   shell: ps aux | grep node
-    #   register: app_status
-    # - debug: msg={{app_status.stdout_lines}}-
+    - name: Install Docker
+      shell: snap install docker  
+    - name: Build container image
+      shell:
+        cmd: docker build -t mexico-api .
+        chdir: /home/vadmin/api-xample
+    - name: Run container
+      shell: docker run -d -p 3000:3000 mexico-api
