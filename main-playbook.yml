@@ -1,18 +1,18 @@
 ---
-# This playbook creates Multipass VMs for a K3S cluster.
-# It includes tasks to read the K3S cluster node VM configuration from a file,
-# create keypair and cloud-init, create the K3S cluster VMs, and create an inventory file.
-- name: Create Multipass VMs for a K3S cluster
+# This playbook creates Multipass VMs for a cluster.
+# It includes tasks to read the cluster node VM configuration from a file,
+# create keypair and cloud-init, create the cluster VMs, and create an inventory file.
+- name: Create Multipass VMs for a cluster
   hosts: localhost
 
   tasks:
-  - name: Read K3S cluster node VM configuration from file
+  - name: Read cluster node VM configuration from file
     include_vars:
       file: nodes.yml
       name: nodes
   - name: Create keypair and cloud-init
     include_tasks: create-keys-and-cloudinit.yml
-  - name: Create the K3S cluster VMs
+  - name: Create the cluster VMs
     include_tasks: delete-and-create-new-vm-tasks.yml
     vars:
       vmname: "{{ item.key }}"
