@@ -18,8 +18,8 @@
   delegate_to: localhost
 - name: Generate inventory.yml from template
   template:
-    src: inventory-template.j2
-    dest: inventory.yml
+    src: ../templates/inventory-template.j2
+    dest: ../../../inventory.yml
   vars:
     vm_ips: "{{ vm_ips.results }}"
   delegate_to: localhost
